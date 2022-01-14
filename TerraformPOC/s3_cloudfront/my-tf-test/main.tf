@@ -1,5 +1,10 @@
+provider "aws" {
+    region = var.region
+}
+
+
 resource "aws_s3_bucket" "b" {
-  bucket = "my-tf-test-bucket-cl"
+  bucket = "${var.s3_bucketName}"
   acl    = "log-delivery-write"
 
   server_side_encryption_configuration {
@@ -70,7 +75,7 @@ resource "aws_s3_bucket_policy" "example" {
 
 
 resource "aws_cloudfront_origin_access_identity" "example" {
-  comment = "my-tf-test-bucket-cl.s3.us-east-1.amazonaws.com"
+  comment = "${var.s3_bucketName}.s3.${var.region}.amazonaws.com"
 }
 
 
@@ -90,12 +95,12 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
 
   enabled             = true
   is_ipv6_enabled     = false
-  comment             = "my-tf-test cloud distribution"
+  comment             = "${var.s3_bucketName} distribution"
   default_root_object = "index.html"
 
   logging_config {
     include_cookies = false
-    bucket          = "my-tf-test-bucket-cl.s3.amazonaws.com"
+    bucket          = "${var.s3_bucketName}.s3.amazonaws.com"
     prefix          = "myprefix"
   }
 
